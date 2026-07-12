@@ -1007,7 +1007,7 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
 
 /* =========== АДАПТИВ =========== */
 
-@media (max-width: 1024px) {
+@media (max-width: 1180px) {
   .container { padding: 0 40px; }
   .shot-row { grid-template-columns: 260px 1fr; gap: 40px; }
   .shot-body h3 { font-size: 32px; }
@@ -1023,15 +1023,39 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
   .dot::after { display: none; }
 }
 
+/* Планшет (iPad Air — 820px и т.п.).
+   Декоративная колонка справа остаётся, но ужимается: столбик прижимается
+   к краю и сужается, освобождая левую половину экрана. Манифест при этом
+   получает жёсткий потолок ширины — он ложится в две строки и больше не
+   доезжает до колонки. */
+@media (max-width: 1024px) {
+  .right-art .art-stack {
+    right: 40px;
+    max-width: 250px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .right-art .art-divider { width: 110px; }
+  .stack { padding: 60px 0; }
+  .quote {
+    max-width: 400px;
+    font-size: 22px;
+    text-wrap: balance;
+  }
+}
+
 @media (max-width: 640px) {
   .container { padding: 0 24px; }
   /* HERO v9 на мобильном */
   .top-meta { left: 24px; right: 24px; top: 24px; }
   .top-meta .meta-stack .muted { display: none; }
   .bottom-meta { left: 24px; right: 24px; bottom: 24px; }
+  /* На телефоне колонке справа места нет совсем — прячем, а манифест
+     отпускаем на всю ширину контейнера (потолок в 400px нужен был только
+     чтобы разойтись с колонкой на планшете). */
   .right-art { display: none; }
   .stack { padding: 80px 0 60px; }
-  .quote { font-size: 18px; }
+  .quote { font-size: 18px; max-width: 100%; }
   /* остальные секции */
   .essence, .method, .formats, .requests, .contact { padding: 80px 0; }
   .author .container { padding-top: 80px; padding-bottom: 80px; }

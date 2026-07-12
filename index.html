@@ -891,6 +891,25 @@
       z-index: 2;
     }
 
+    /* Мобильная инлайн-версия режиссёрских пометок:
+       на десктопе скрыта — там пометки живут на полях (.w2-note-new).
+       На узком экране полей нет, поэтому пометка «подтягивается» под
+       нужную реплику и указывает на неё стрелкой вверх. */
+    .w2-note-mobile {
+      display: none;
+      text-align: center;
+      font-family: 'Marck Script', cursive;
+      font-size: 23px; line-height: 1.2;
+      color: rgba(180, 40, 40, 0.9);
+      margin: -10px auto 24px;
+      transform: rotate(-1.5deg);
+    }
+    .w2-note-mobile .arr {
+      display: inline-block;
+      margin-right: 5px;
+      opacity: 0.7;
+    }
+
     /* СТРЕЛКА (рукописная) */
     .w2-hand-arrow {
       position: absolute;
@@ -1011,10 +1030,37 @@
     }
 
 
-    @media (max-width: 900px) {
-      .w2-sheet { padding: 30px 40px 40px; min-height: auto; }
+    /* ПЛАНШЕТ И УЖЕ (iPad Air — 820px и т.п.).
+       Ниже 1100px лист перестаёт быть «десктопным»: паддинги схлопываются,
+       сценарий переливается, и абсолютные координаты пометок на полях
+       (.w2-note-new / .w2-arrow-svg — они подогнаны под лист 1100px с
+       паддингом 100px) начинают промахиваться мимо реплик. Поэтому здесь
+       поля отключаются целиком, а пометки берутся инлайновые. */
+    @media (max-width: 1180px) {
+      .w2-sheet { padding: 40px 48px 48px; min-height: auto; }
       .w2-margin-note, .w2-hand-arrow, .w2-stamp, .w2-holes { position: static; transform: none; margin: 20px auto; text-align: center; max-width: 300px; }
       .w2-holes { display: none; }
+
+      /* Пометки на полях и стрелки прячем — полей больше нет.
+         Штампы-кнопки (.w2-stamp) НЕ прячем: они переезжают вниз листа. */
+      .w2-note-new, .w2-arrow-svg, .w2-hand-arrow, .w2-margin-note { display: none !important; }
+
+      /* Режиссёрские пометки — инлайн под нужной репликой */
+      .w2-note-mobile { display: block; }
+
+      /* ШТАМПЫ-КНОПКИ — из полей переезжают вниз листа, столбиком по центру */
+      .w2-stamps {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 30px; margin: 46px auto 6px;
+      }
+      .w2-stamp {
+        position: static !important;
+        margin: 0 !important;
+        transform: rotate(-2deg);
+      }
+      .w2-stamp-tg { transform: rotate(2deg); }
+      .w2-stamp:hover { transform: rotate(-1deg) scale(1.03); }
+      .w2-stamp-tg:hover { transform: rotate(3deg) scale(1.03); }
     }
 
     /* ВИНЬЕТКА — единственный источник затемнения краёв листа.
@@ -1040,13 +1086,12 @@
           rgba(10,10,10,0.7) 92%,
           var(--scena) 100%);
       }
-      /* Все режиссёрские пометки на полях — прячем: на узком экране им негде жить */
-      .w2-note-new, .w2-arrow-svg, .w2-hand-arrow, .w2-stamp, .w2-margin-note { display: none !important; }
       /* Лист занимает больше места */
       .w2-sheet { padding: 24px 20px 30px; }
       .w2-toplabel { font-size: 9px; padding: 20px 24px; }
       .w2-fade-in { height: 160px; margin-bottom: 30px; }
       .contact .container { padding: 0 20px; }
+      .w2-hand-img { width: 150px; }
     }
   </style>
 
@@ -1092,16 +1137,6 @@
         </svg>
       </span>
 
-      <!-- ШТАМПЫ-КНОПКИ -->
-      <a href="brief.docx" download class="w2-stamp w2-stamp-brief">
-        <span class="top">brief.docx · 11 КБ</span>
-        <span class="act">скачать бриф</span>
-      </a>
-      <a href="https://t.me/yuli_knyz" target="_blank" rel="noopener" class="w2-stamp w2-stamp-tg w2-stamp-hand">
-        <span class="top">@yuli_knyz</span>
-        <img src="napisat_avtoru_clean1.png" alt="написать автору" class="w2-hand-img">
-      </a>
-
       <!-- СЦЕНАРНЫЙ ТЕКСТ -->
       <div class="w2-script">
         <div class="w2-slug">ИНТ. ПЯТАЯ СТЕНА — ЗА СЕКУНДУ ДО</div>
@@ -1121,8 +1156,9 @@
         <div class="w2-character">Юля</div>
         <div class="w2-paren">(тёплый внимательный взгляд)</div>
         <div class="w2-dialogue">
-          Расскажи. Не про формат — <span class="w2-circle">про то, ради чего ты вообще это затеял</span>.
+          Расскажи. Не про формат — <span class="w2-circle">про то, ради чего ты вообще это затеял.</span>
         </div>
+        <div class="w2-note-mobile"><span class="arr">↑</span>главный вопрос</div>
 
         <div class="w2-action">
           ТЫ не знаешь, куда деть руки. Формат, бюджет, сроки — всё, к чему ты готовился, вдруг оказывается не тем, о чём спрашивают.
@@ -1140,8 +1176,9 @@
 
         <div class="w2-character">Юля</div>
         <div class="w2-dialogue">
-          И не надо. Спектакль, событие, фильм — это моя забота, не твоя. <span class="w2-circle tight">Форма придёт последней</span>.
+          И не надо. Спектакль, событие, фильм — это моя забота, не твоя. <span class="w2-circle tight">Форма придёт последней.</span>
         </div>
+        <div class="w2-note-mobile"><span class="arr">↑</span>сначала — ты. форма — потом</div>
 
         <div class="w2-action">
           Пауза. Ты выдыхаешь — оказывается, можно не знать ответа, и это нормально. Тихо, и тишина не давит.
@@ -1149,12 +1186,13 @@
 
         <div class="w2-character">Юля (тише)</div>
         <div class="w2-dialogue">
-          Тебе нужно только решиться. Остальное <span class="w2-circle rot2">сделаем вместе</span>.
+          Тебе нужно только решиться. Остальное <span class="w2-circle rot2">сделаем вместе.</span>
         </div>
 
         <div class="w2-action">
-          Ты смотришь на неё и ловишь себя на том, что уже не защищаешь идею — просто рассказываешь о ней. За секунду до первого слова о проекте ты понимаешь: ты не снаружи. <span class="w2-circle rot3">Ты уже внутри</span>.
+          Ты смотришь на неё и ловишь себя на том, что уже не защищаешь идею — просто рассказываешь о ней. За секунду до первого слова о проекте ты понимаешь: ты не снаружи. <span class="w2-circle rot3">Ты уже внутри.</span>
         </div>
+        <div class="w2-note-mobile">вот она — пятая стена<span class="arr">↑</span></div>
 
         <div class="w2-transition" translate="no">CUT TO:</div>
 
@@ -1162,6 +1200,22 @@
         <div style="text-align:right; font-family: 'Marck Script', cursive; font-size: 24px; color: rgba(180,40,40,0.85); transform: rotate(-1.5deg); margin-top: 20px; margin-right: 20px;">
           ждём.
         </div>
+      </div>
+
+      <!-- ШТАМПЫ-КНОПКИ.
+           На десктопе они position:absolute и «прибиты» к полям листа
+           (см. .w2-stamp-brief / .w2-stamp-tg), поэтому их место в DOM
+           значения не имеет. На мобиле position:static — и они выстраиваются
+           здесь, внизу листа, аккуратным столбиком. -->
+      <div class="w2-stamps">
+        <a href="brief.docx" download class="w2-stamp w2-stamp-brief">
+          <span class="top">brief.docx · 11 КБ</span>
+          <span class="act">скачать бриф</span>
+        </a>
+        <a href="https://t.me/yuli_knyz" target="_blank" rel="noopener" class="w2-stamp w2-stamp-tg w2-stamp-hand">
+          <span class="top">@yuli_knyz</span>
+          <img src="napisat_avtoru_clean1.png" alt="написать автору" class="w2-hand-img">
+        </a>
       </div>
 
       <!-- ЗАТЕМНЕНИЕ КРАЁВ -->
