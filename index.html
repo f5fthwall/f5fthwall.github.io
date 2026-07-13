@@ -459,8 +459,20 @@
 <!-- ============== SEC.05 С ЧЕМ ПРИХОДЯТ ============== -->
 <section id="requests" class="requests">
   <style>
-    .requests { padding-top: 120px; padding-bottom: 140px; }
+    /* Уход в затемнение: чёрная вуаль поднимается на конец секции, крем
+       гаснет сам — стыка двух фонов не остаётся. Нижний паддинг держит
+       вуаль на пустом поле, чтобы она не съедала .fp-foot. */
+    .requests { padding-top: 120px; padding-bottom: 260px; position: relative; }
     .requests .container { max-width: 980px; }
+    .requests::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 220px;
+      background: linear-gradient(to bottom in oklab, transparent, var(--scena));
+      pointer-events: none;
+      z-index: 2;
+    }
     .fp-head { text-align: center; margin-bottom: 80px; }
     .fp-head .top {
       font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.28em;
@@ -532,6 +544,8 @@
     .fp-foot .play-link:hover .arrow { transform: translateY(3px); }
 
     @media (max-width: 640px) {
+      .requests { padding-bottom: 180px; }
+      .requests::after { height: 150px; }
       .fp-scene { grid-template-columns: 1fr; gap: 20px; padding-bottom: 40px; }
       .fp-list { gap: 40px; }
       .fp-scene .marks { line-height: 1.6; }
@@ -633,17 +647,11 @@
     .contact { padding: 0 0 40px; position: relative; }
     .contact .container { max-width: 1200px; }
 
-    /* Плавный переход из кремового SEC.05 в чёрный SEC.06 */
+    /* Переход из SEC.05 отдан самой SEC.05 (уход в затемнение),
+       здесь остаётся только отступ перед меткой секции. */
     .w2-fade-in {
       display: block;
-      height: 240px;
-      background: linear-gradient(to bottom,
-        var(--programka) 0%,
-        rgba(245, 239, 228, 0.85) 25%,
-        rgba(80, 65, 45, 0.55) 55%,
-        rgba(20, 15, 10, 0.85) 78%,
-        var(--scena) 100%);
-      margin-bottom: 60px;
+      height: 60px;
     }
 
     /* Метка секции в чёрном над листом */
@@ -1089,7 +1097,7 @@
       /* Лист занимает больше места */
       .w2-sheet { padding: 24px 20px 30px; }
       .w2-toplabel { font-size: 9px; padding: 20px 24px; }
-      .w2-fade-in { height: 160px; margin-bottom: 30px; }
+      .w2-fade-in { height: 30px; }
       .contact .container { padding: 0 20px; }
       .w2-hand-img { width: 150px; }
     }
