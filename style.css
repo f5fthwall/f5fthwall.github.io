@@ -497,21 +497,23 @@ body {
   position: relative;
   box-sizing: border-box;
 }
-.shot-frame svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+/* Кадр задан через aspect-ratio, поэтому процентную высоту (height/max-height: 100%)
+   внутри него Safari разрешает неверно — svg и картинка съезжают. Задаём медиа
+   бокс явно, четырьмя отступами: высота больше не зависит от процентов.
+   svg центрирует содержимое сам (preserveAspectRatio), img — через object-fit. */
+.shot-frame svg,
 .shot-frame .shot-fingerprint {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  width: auto;
+  height: auto;
   display: block;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
-  margin: 0 auto;
   object-fit: contain;
-  opacity: 0.9;
 }
+.shot-frame .shot-fingerprint { opacity: 0.9; }
 /* угловые метки кадра */
 .shot-frame::before,
 .shot-frame::after {
@@ -1078,10 +1080,32 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
   .hero { padding: 24px 0; }
   .top-meta, .bottom-meta { padding: 0 24px; }
   .top-meta .meta-stack .muted { display: none; }
-  /* На телефоне колонке справа места нет совсем — прячем, а манифест
-     отпускаем на всю ширину контейнера (потолок в 400px нужен был только
-     чтобы разойтись с колонкой на планшете). */
-  .right-art { display: none; }
+  /* На телефоне колонка справа не помещается сбоку, поэтому она перестаёт быть
+     наложением и становится обычной строкой сетки — сразу под манифестом.
+     Порядок задаётся гридом, разметку трогать не нужно. */
+  .hero { grid-template-rows: auto auto auto auto; }
+  .top-meta { grid-row: 1; }
+  .hero .container { grid-row: 2; }
+  .right-art { grid-row: 3; }
+  .bottom-meta { grid-row: 4; padding-top: 48px; }
+  .right-art {
+    position: static;
+    width: 100%;
+    height: auto;
+    justify-self: stretch;
+    padding: 48px 24px 0;
+    margin: 0;
+  }
+  .right-art .art-stack {
+    position: static;
+    transform: none;
+    right: auto;
+    max-width: 100%;
+    max-height: none;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .quote { max-width: 100%; }
   /* остальные секции */
   .essence, .method, .formats, .requests, .contact { padding: 80px 0; }
