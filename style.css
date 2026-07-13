@@ -490,26 +490,27 @@ body {
   align-items: start;
 }
 
+/* Пропорция кадра — через padding-bottom, а не aspect-ratio: Safari и Chrome
+   считают aspect-ratio по-разному, и рамка получалась то альбомной, то портретной.
+   Высота от padding в процентах от ШИРИНЫ — одинаково во всех браузерах.
+   11/16 = 68.75%. */
 .shot-frame {
-  aspect-ratio: 16 / 11;
-  border: 1px solid rgba(245, 239, 228, 0.28);
-  padding: 14px;
   position: relative;
-  box-sizing: border-box;
+  height: 0;
+  padding-bottom: 68.75%;
+  border: 1px solid rgba(245, 239, 228, 0.28);
 }
-/* Кадр задан через aspect-ratio, поэтому процентную высоту (height/max-height: 100%)
-   внутри него Safari разрешает неверно — svg и картинка съезжают. Задаём медиа
-   бокс явно, четырьмя отступами: высота больше не зависит от процентов.
-   svg центрирует содержимое сам (preserveAspectRatio), img — через object-fit. */
+/* Медиа внутри кадра. Ширину и высоту задаём явно: у абсолютно спозиционированного
+   замещаемого элемента (img/svg) при width/height: auto четыре отступа НЕ задают
+   размер — берётся собственный размер файла, и картинка вылезает за рамку.
+   28px = отступ 14px с каждой стороны. */
 .shot-frame svg,
 .shot-frame .shot-fingerprint {
   position: absolute;
   top: 14px;
-  right: 14px;
-  bottom: 14px;
   left: 14px;
-  width: auto;
-  height: auto;
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
   display: block;
   object-fit: contain;
 }
@@ -1074,7 +1075,7 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
   .right-art .art-divider { display: none; }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .container { padding: 0 24px; }
   /* HERO v9 на мобильном */
   .hero { padding: 24px 0; }
@@ -1083,9 +1084,22 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
   /* На телефоне колонка справа не помещается сбоку, поэтому она перестаёт быть
      наложением и становится обычной строкой сетки — сразу под манифестом.
      Порядок задаётся гридом, разметку трогать не нужно. */
-  .hero { grid-template-rows: auto auto auto auto; }
+  .hero {
+    grid-template-rows: auto auto auto auto;
+    /* строки не растягиваются: иначе грид раздаёт им высоту секции, и заголовок
+       перестаёт центрироваться — уезжает вверх, под самый хедер */
+    align-content: start;
+    overflow: visible;
+  }
   .top-meta { grid-row: 1; }
-  .hero .container { grid-row: 2; }
+  /* Первый экран сохраняет высоту, поэтому заголовок стоит на том же отступе
+     сверху, что и на широких экранах, — а колонка уходит под него, за сгиб. */
+  .hero .container {
+    grid-row: 2;
+    min-height: calc(100svh - 140px);
+    display: grid;
+    align-content: center;
+  }
   .right-art { grid-row: 3; }
   .bottom-meta { grid-row: 4; padding-top: 48px; }
   .right-art {
@@ -1093,7 +1107,7 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
     width: 100%;
     height: auto;
     justify-self: stretch;
-    padding: 48px 24px 0;
+    padding: 56px 24px 0;
     margin: 0;
   }
   .right-art .art-stack {
@@ -1106,7 +1120,11 @@ a.filmo-item:hover::after { opacity: 0.5; transform: translate(2px, -2px); }
     -webkit-mask-image: none;
     mask-image: none;
   }
-  .quote { max-width: 100%; }
+  /* на узком экране обе колонки — по центру */
+  .stack { text-align: center; margin: 0 auto; }
+  .right-art .art-stack { text-align: center; margin: 0 auto; }
+  .right-art .art-divider { margin-left: auto; margin-right: auto; }
+  .quote { max-width: 100%; margin-left: auto; margin-right: auto; }
   /* остальные секции */
   .essence, .method, .formats, .requests, .contact { padding: 80px 0; }
   .author .container { padding-top: 80px; padding-bottom: 80px; }
